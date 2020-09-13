@@ -1,0 +1,28 @@
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
+
+int main(void)
+{
+	double A,B,C,rt,c,t,s,r,pi;
+	
+	pi=3.14159;
+	
+	cin >> A >> B >> C;
+	
+	rt=0.5 * A * C;
+	c= pi * C * C;
+	t= 0.5 * (A+B) *C;
+	s= B * B;
+	r= A * B;
+	
+	cout << "TRIANGULO: " << setprecision(3) << fixed << rt << endl;
+	cout << "CIRCULO: " << setprecision(3) << fixed << c << endl;
+	cout << "TRAPEZIO: " << setprecision(3) << fixed << t << endl;
+	cout << "QUADRADO: " << setprecision(3) << fixed << s << endl;
+	cout << "RETANGULO: " << setprecision(3) << fixed << r << endl;
+	
+	
+	return 0;
+}
