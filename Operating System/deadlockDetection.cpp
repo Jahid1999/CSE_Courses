@@ -4,8 +4,8 @@
 
 using namespace std;
   
-void bankersAlgorithm(int processes[], int available[],
-					  int maximum[][total_resource_number],
+void deadlockDetectionAlgorithm(int processes[], int available[],
+					  int request[][total_resource_number],
                       int allocated[][total_resource_number]) {
                       
     int resource_need[total_processes][total_resource_number];
@@ -14,9 +14,12 @@ void bankersAlgorithm(int processes[], int available[],
     int count = 0;
     
     for (int i = 0 ; i < total_processes ; i++) {
+    	int tr = 0;
     	for (int j = 0 ; j < total_resource_number ; j++){
-    		resource_need[i][j] = maximum[i][j] - allocated[i][j];
-    	}           
+    		tr += allocated[i][j];
+    	} 
+    	if(tr==0)
+    		finish[i] = true;          
     }
 
     int temp[total_resource_number];
@@ -25,40 +28,39 @@ void bankersAlgorithm(int processes[], int available[],
         temp[i] = available[i];
   	}
   	
-    while (total_processes != count) {
-
+   for(int tp=0; tp < total_processes; tp++) {
         bool found = false;
         for (int i = 0; i < total_processes; i++) {
             if (!finish[i]) {
                 int j;
                 for (j = 0; j < total_resource_number; j++) {
-                	if (resource_need[i][j] > temp[j])
-                        break;
+                	if (request[i][j] > temp[j]) {
+                		found = true;
+                		break;
+                	}
+                     
                 }
-                   
-                if (j == total_resource_number) {
+                
+                if(!found)
+                {
+                    safe_state_squence[count++] = i;
                     for (int k = 0 ; k < total_resource_number ; k++) {
                     	temp[k] += allocated[i][k];
-                    }
-                    
+                    }                 
                     finish[i] = true;
-                    found = true;  
-                    safe_state_squence[count++] = i;
                 }
+                 
             }
         }
-        if (!found) {
-            cout << "This usage scenario is not in safe state" << endl;
-            return;
-        }
+        
     }
-
-    cout << "This usage scenario is in safe state" << endl << "Safe state sequence: ";
     
-    for (int i = 0; i < total_processes ; i++) {
-    	cout << safe_state_squence[i] << " ";  
+	if(count != total_processes) {
+       cout << "Deadlock detected!" << endl;
     }
-  	cout << endl;
+    else {
+    	cout << "This usage scenario is not in deadlock" << endl;
+    }
   	
     return;
 }
@@ -66,12 +68,12 @@ void bankersAlgorithm(int processes[], int available[],
 int main(void) {
 
     int processes[] = {0, 1, 2, 3, 4};
-    int available_resource[] = {3, 3, 2};
+    int available_resource[] = {0, 0, 0};
 
-    int maxmimum[5][total_resource_number] = {{7, 5, 3}, {3, 2, 2}, {9, 0, 2}, {2, 2, 2}, {4, 3, 3}};
-    int allocated[5][total_resource_number] = {{0, 1, 0}, {2, 0, 0}, {3, 0, 2}, {2, 1, 1}, {0, 0, 2}};
+    int request[5][total_resource_number] = {{0, 0, 0}, {2, 0, 2}, {0, 0, 1}, {1, 0, 0}, {0, 0, 2}};
+    int allocated[5][total_resource_number] = {{0, 1, 0}, {2, 0, 0}, {3, 0, 3}, {2, 1, 1}, {0, 0, 2}};
   
-    bankersAlgorithm(processes, available_resource, maxmimum, allocated);
+    deadlockDetectionAlgorithm(processes, available_resource, request, allocated);
   
     return 0;
 }
